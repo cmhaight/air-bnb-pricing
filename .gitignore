@@ -1,0 +1,18 @@
+# Python caches
+__pycache__/
+*.pyc
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local virtual environments
+venv/
+.env
+*.egg-info/
+*.egg
+
+# Data files 
+data/
+
+# Outputs
+outputs/
