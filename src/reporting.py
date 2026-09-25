@@ -13,6 +13,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 def build_html_dashboard(csv_dir: Path, plot_dir: Path, run_root: Path):
+    """
+    Extracts graphs and data from saved CSVs and uses them to create an HTML summary of the model performance. 
+    """
     with open ("config.yaml","r") as file:
         config = yaml.safe_load(file)
    
@@ -514,6 +517,9 @@ def save_sm_summary(results,filepath):
 
 
 def create_output_folder(config_path: Path):
+    """
+    Creates timestamped output folder for CSVs, graphs, and statsmodels results. 
+    """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_folder = Path(f"outputs/run_{timestamp}")
     run_folder.mkdir(parents=True, exist_ok=True)
@@ -532,6 +538,9 @@ def export_to_csv(df: pd.DataFrame,path :str):
 
 def save_diag_plots(result=None,*,path,predicts_orig_scale,target_orig_scale,model_name='model',logged=False,
                     feat_df=None):
+    """
+    Creates and saves diagnostic plots that display model performance. 
+    """
     resid_orig_scale = target_orig_scale - predicts_orig_scale
     resids_log_scale = np.log(target_orig_scale) - np.log(predicts_orig_scale)
     lower_bound, upper_bound = np.percentile(resid_orig_scale, [1, 99])

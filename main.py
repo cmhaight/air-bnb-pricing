@@ -18,7 +18,7 @@ def main(data_path):
         ]
     )
 
-    logger = logging.getLogger("AirbnbPipeline")
+    logger = logging.getLogger("airbnbpipeline")
 
     with open ("config.yaml","r") as file:
         config = yaml.safe_load(file)
@@ -32,21 +32,23 @@ def main(data_path):
     sm_summary_path_m2 = run_root / "statsmodels_ols_summary_m2.txt"
     perm_hyperparams = config['evals']['permutation_settings']
 
-    raw_zip_path = config['paths']['geo_paths']['raw_zip_path']
-    clean_zip_path = Path(raw_zip_path)
+    # raw_zip_path = config['paths']['geo_paths']['raw_zip_path']
+    # clean_zip_path = Path(raw_zip_path)
+
+    col_initial_drop = config['col_groups']['col_keep_initial_drop']
+    col_after_ftr_drop = config['col_groups']['col_after_ftr_eng_to_keep']
     
     logger.info('Starting the data pipeline...')
 
     df = dpr.csv_to_df(data_path)
 
-
-    df = dpr.pre_split_col_drop(df,config['col_groups']['col_initial_drop'])
+    df = dpr.pre_split_col_drop(df,col_initial_drop)
     train_set, test_set = dpr.split_data_with_id_hash(df,0.2,'id')
     
     train_set = dpr.post_split_clean(train_set)
 
-    train_set_clean = (train_set.pipe(dpr.feature_engineering,clean_zip_path)
-                .pipe(dpr.drop_cols,config['col_groups']['col_after_ftr_eng_drop']))
+    train_set_clean = (train_set.pipe(dpr.feature_engineering)
+                .pipe(dpr.drop_cols,col_after_ftr_drop))
 
     cv_groups = train_set_clean[config['groups']['cv_split_group']]
     
@@ -166,8 +168,8 @@ def main(data_path):
 
     test_set = dpr.post_split_clean(test_set)
     
-    test_set_clean = (test_set.pipe(dpr.feature_engineering,clean_zip_path)
-                    .pipe(dpr.drop_cols,config['col_groups']['col_after_ftr_eng_drop']))
+    test_set_clean = (test_set.pipe(dpr.feature_engineering)
+                    .pipe(dpr.drop_cols,col_after_ftr_drop))
 
     y_test = test_set_clean['price']
     numeric_cols = config['models']['hist_model_4']['features']['numeric']

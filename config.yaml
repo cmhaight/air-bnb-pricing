@@ -5,7 +5,7 @@ targets:
 
 paths:
   geo_paths:
-    raw_zip_path: "Data/tl_2025_us_zcta520/tl_2025_us_zcta520.shp"
+    raw_zip_path: "data/tl_2025_us_zcta520/tl_2025_us_zcta520.shp"
     clean_zip_path: Path(raw_zip_path)
 
   output_paths:
@@ -48,7 +48,7 @@ models:
     features:
       categorical:
         - "room_type"
-        - "pure_spatial_cluster"
+        - "neighbourhood_group_cleansed"
         - "property_type_clean"
         - "hot_tub"
         - "ac"
@@ -104,7 +104,7 @@ evals:
     n_jobs: -1
         
 col_groups:
-  col_initial_drop: ['id', 'last_scraped', 'host_is_superhost', 'neighbourhood_cleansed',
+  col_keep_initial_drop: ['id', 'last_scraped', 'host_is_superhost', 'neighbourhood_cleansed',
                     'neighbourhood_group_cleansed', 'latitude', 'longitude',
                     'property_type', 'room_type', 'accommodates', 'bathrooms',
                     'bathrooms_text', 'bedrooms', 'beds', 'amenities', 'price',
@@ -113,9 +113,12 @@ col_groups:
                     'calculated_host_listings_count_private_rooms',
                     'calculated_host_listings_count_shared_rooms', 'reviews_per_month']
             
-  col_after_ftr_eng_drop: ['geometry','latitude','longitude','amenities','property_type','availability_90',
-                           'reviews_per_month','number_of_reviews','calculated_host_listings_count_shared_rooms',
-                           'last_scraped']
+  col_after_ftr_eng_to_keep: ['id', 'host_is_superhost', 'neighbourhood_cleansed','neighbourhood_group_cleansed', 
+                            'room_type', 'accommodates','bathrooms', 'bedrooms', 'beds', 'price', 'minimum_nights',
+                            'review_scores_rating', 'calculated_host_listings_count',
+                            'calculated_host_listings_count_private_rooms', 'month','bed_per_accom', 'bath_per_accom',
+                            'has_pool', 'hot_tub','free_parking', 'fireplace', 'ac', 'patio_balcony', 'life_size_games',
+                            'minimum_nights_cat', 'accommodates_cat', 'bathrooms_cat','property_type_clean']
 
 groups:
   cv_split_group: 'id'

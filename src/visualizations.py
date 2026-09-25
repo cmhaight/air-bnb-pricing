@@ -149,6 +149,10 @@ def make_scatter_plots(df: pd.DataFrame,*, x_vars: list, y_vars: str | list):
 
 
 def generate_residuals_plot(*,predicts_orig_scale,target_orig_scale,name='model'):
+    """
+    Creates a plot that compares target prices and predicted prices on the original scale. Includes a perfect fit 
+    line.
+    """
     fig, ax = plt.subplots(figsize=(10, 6),dpi=200,layout='constrained')
     
     ax.grid(True, linestyle="--", alpha=0.6, color="#cbd5e1")   
@@ -175,6 +179,10 @@ def generate_residuals_plot(*,predicts_orig_scale,target_orig_scale,name='model'
 
 
 def plot_resids_predicted(results):
+    """
+    Takes a statsmodels output and creates a scatter plot that compares the fitted values and the residuals to 
+    check for heteroscedasticity.
+    """
     predicted_vals = results.fittedvalues
     residuals = results.resid
     fig, ax =  plt.subplots(figsize=(8, 5),layout="constrained")
@@ -188,6 +196,10 @@ def plot_resids_predicted(results):
 
 
 def plot_resids_sklearn(*,pred_vals,resids):
+    """
+    Creates a scatter plot that compares the fitted values and the residuals to check for heteroscedasticity. Takes
+    predicted values and residuals as arguments. 
+    """
     fig, ax =  plt.subplots(figsize=(8, 5),layout="constrained")
     ax.grid(True, linestyle="--", alpha=0.6, color="#cbd5e1")
     ax.scatter(pred_vals, resids, alpha=0.7)
@@ -199,6 +211,9 @@ def plot_resids_sklearn(*,pred_vals,resids):
 
 
 def plot_resids_features(results,features):
+    """
+    Creates scatter plots using a statsmodels output that compare residuals and selected model features. 
+    """
     all_features = results.model.exog_names
     exog_data = results.model.exog
     residuals = results.resid
@@ -227,7 +242,9 @@ def plot_resids_features(results,features):
 
 
 def plot_resid_boxplt(results,df,feature):
-
+    """
+    Creates boxplots of the residuals for categorical features. 
+    """
     sns.set_theme(style="whitegrid")
     fig, ax = plt.subplots(figsize=(24, 10))
 
@@ -243,7 +260,9 @@ def plot_resid_boxplt(results,df,feature):
 
 
 def feat_imp_bar_chart_ols(df):
-   
+    """
+    Creates bar charts to visually show the importances of features for statsmodels. 
+    """
     fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
     ax.grid(True, axis='x', linestyle="--", alpha=0.6, color="#cbd5e1")
     ax.set_axisbelow(True)
@@ -280,7 +299,9 @@ def feat_imp_bar_chart_ols(df):
 
 
 def feat_imp_bar_chart_hgbr(df):
-   
+    """
+    Creates bar charts to visually show the importances of features for HGRB models. 
+    """
     fig, ax = plt.subplots(figsize=(10, 6), dpi=200)
     ax.grid(True, axis='x', linestyle="--", alpha=0.6, color="#cbd5e1")
     ax.set_axisbelow(True)

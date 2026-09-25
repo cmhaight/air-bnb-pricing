@@ -14,6 +14,9 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 logger = logging.getLogger(__name__)
 
 def eval_model_sm(results,*,target,predicted_vals,name="model"):
+    """
+    Evaluates statsmodels OLS results and returns common metrics as dataframe. 
+    """
     adj_r_sqrd = results.rsquared_adj
     mae = mean_absolute_error(target, predicted_vals)
     mape = mean_absolute_percentage_error(target, predicted_vals)
@@ -31,7 +34,9 @@ def show_vif(df_encoded):
 
 
 def eval_binned_targets(*,target,predicted_vals,bin_group='predicted',name='model'):
-
+    """
+    Evaluates model performance across different target price bins. Can be either predicted price bins or actual. 
+    """
     results_bins = pd.DataFrame({'actual':target,'predicted':predicted_vals})
     price_group = f"price_group"
     results_bins[price_group] = pd.cut(
@@ -65,6 +70,10 @@ def eval_binned_targets(*,target,predicted_vals,bin_group='predicted',name='mode
 
 
 def eval_bin_target_raw_err(*,target,predicted_vals,bin_group='predicted',name='model'):
+    """
+    Evaluates model performance with raw error amounts across different price bins. 
+    Can be either predicted price bins or actual. 
+    """
     results_bins = pd.DataFrame({'actual':target,'predicted':predicted_vals})
     price_group = f"price_group"
 
@@ -86,6 +95,9 @@ def eval_bin_target_raw_err(*,target,predicted_vals,bin_group='predicted',name='
 
 
 def cross_validate_five_split(features_encoded,raw_target,split_group,log_transform=True,name='model'):
+    """
+    Cross-validation of performance for statsmodels OLS model
+    """
     gkf = GroupKFold(n_splits=5)
     mae_scores = []
     rmse_scores = []
@@ -116,6 +128,9 @@ def cross_validate_five_split(features_encoded,raw_target,split_group,log_transf
     return cv_df
 
 def cross_val_5_split_sklearn(model,X,y,group,name='model'):
+    """
+    Cross-validation of performance for HGBR model. 
+    """
     gkf = GroupKFold(n_splits=5)
     cv_scores_mae = cross_val_score(model,X,y,groups=group, cv=gkf,scoring="neg_mean_absolute_error")
     cv_scores_rmse = cross_val_score(model,X,y,groups=group, cv=gkf,scoring="neg_root_mean_squared_error")
@@ -134,6 +149,9 @@ def cross_val_5_split_sklearn(model,X,y,group,name='model'):
 
 
 def pred_interval_statmodel(*,results,X_w_constant):
+    """
+    Calculates prediction intervals for statsmodels OLS
+    """
     smearing_factor = np.mean(np.exp(results.resid))
     prediction_object = results.get_prediction(X_w_constant)
     summary_frame = prediction_object.summary_frame(alpha=0.05)
@@ -145,6 +163,9 @@ def pred_interval_statmodel(*,results,X_w_constant):
 
 
 def eval_tree_model(*,target,predicted_vals,name='Model'):
+    """
+    Evaluates HGBR results and returns common metrics as dataframe. 
+    """
     r2 = r2_score(target, predicted_vals)
     rmse = root_mean_squared_error(target, predicted_vals)
     mae = mean_absolute_error(target, predicted_vals)
@@ -156,6 +177,10 @@ def eval_tree_model(*,target,predicted_vals,name='Model'):
             
 
 def sm_feature_imp(results):
+    """
+    Calculates feature importance for statsmodels OLS by first finding the 10 highest t-values and then sorting
+    by effect size. 
+    """
     t_stats = results.tvalues
     if 'const' in t_stats.index:
         t_stats = t_stats.drop('const')
@@ -171,6 +196,10 @@ def sm_feature_imp(results):
 
 
 def hgbr_feat_imp(model,features,target,hyperparams):
+    """
+    Calculates feature importance for HGBR model by using permutation importance. Returns top 10 features in terms
+    of highest mean r^2 decrease after shuffling. 
+    """
     perm_importance = permutation_importance(
     model,features, target,**hyperparams
     )
@@ -183,6 +212,9 @@ def hgbr_feat_imp(model,features,target,hyperparams):
 
 
 def sm_ols_eval_pipe(results,*,features_encoded,split_group,name='model',path):
+    """
+    Full evaluation pipeline for statsmodels OLS that returns common metrics and creates and saves graphs. 
+    """
     logger.info("Evaluating OLS model")
     predicts_orig_scale,target_orig_scale = dpr.log_re_transformation(results)
 
@@ -208,6 +240,9 @@ def sm_ols_eval_pipe(results,*,features_encoded,split_group,name='model',path):
 
 def histgbr_eval_pipe(*,model,features,target,predicted_vals,split_group,name="model",path,perm_imp_params,
                       logged=False):
+    """
+    Full evaluation pipeline for HGBR model that returns common metrics and creates and saves graphs. 
+    """
     logger.info("Evaluating HGBR model")
     cv_scores = cross_val_5_split_sklearn(model,features,target,split_group,name)
     global_eval = eval_tree_model(target=target,predicted_vals=predicted_vals,name=name)
@@ -227,7 +262,9 @@ def histgbr_eval_pipe(*,model,features,target,predicted_vals,split_group,name="m
 
 
 def test_set_hgbr_eval_pipe(*,model,features,target,predicted_vals,name="model",path,perm_imp_params,logged=False):
-    
+    """
+    Full evaluation pipeline for the test set using a HGBR model. Returns common metrics and creates and saves graphs. 
+    """
     logger.info("Evaluating test set with HGBR model")
     global_eval = eval_tree_model(target=target,predicted_vals=predicted_vals,name=name)
     bin_eval = eval_binned_targets(target=target,predicted_vals=predicted_vals,name=name)

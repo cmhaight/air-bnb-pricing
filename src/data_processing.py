@@ -39,9 +39,9 @@ def geo_zip_encode(df,file_path):
     return df
 
 
-def pre_split_col_drop(df: pd.DataFrame,cols: list):
+def pre_split_col_drop(df: pd.DataFrame,cols_keep: list):
     logger.info("Cleaning and splitting data...")
-    cols_keep_clean = df.columns.intersection(cols)
+    cols_keep_clean = df.columns.intersection(cols_keep)
     df = df[cols_keep_clean].copy()
     return df
 
@@ -53,17 +53,19 @@ def clean_format(df: pd.DataFrame):
     return df
 
 
-def drop_cols(df: pd.DataFrame,cols: list):
-    df = df.drop(columns=cols)
+def drop_cols(df: pd.DataFrame,cols_keep: list):
+    df = df[cols_keep].copy()
     return df
 
 
 def filter_pricing(df):
+    # Filter out prices above $4000 a night. EDA shows these are more likely to be mistakes or extreme outliers
     df = df[df['price'] < 4000]
-
+    # Filter out prices that are over $3000 when accommodates is 4 or less. EDA shows these are likely to be mistakes.
     accomodate_anomaly_mask = (df['accommodates'] <= 4) & (df['price'] > 3000)
     df = df[~accomodate_anomaly_mask]
-    
+    # Filter out prices over a certain amount when minimum nights are over 30 or 60. EDA shows that these are very 
+    # likely to be mistakes. 
     min_night_anomaly_mask = (
         ((df['minimum_nights'] >= 60) & (df['price'] > 300)) | 
         ((df['minimum_nights'] >= 30) & (df['minimum_nights'] < 60) & (df['price'] > 500)))
@@ -78,6 +80,10 @@ def drop_na_othr_columns(df):
 
 
 def fill_na_columns(df):
+    """
+    Fills NaN columns by extracting bathrooms text for bathrooms, filling with medians, and filling host_is_superhost
+    with 'f'
+    """
     review_cols_nums = ['review_scores_rating']
     train_medians = df[review_cols_nums].median()
     text_to_digit = {'half-bath': '0.5'}
@@ -105,6 +111,9 @@ def fill_na_columns(df):
 
 
 def per_accom_feature(df):
+    """
+    Creates features beds per accommodates and bathrooms for accommodates
+    """
     df['bed_per_accom'] = df['beds'].div(df['accommodates'].replace(0,np.nan))
     df['bath_per_accom'] = df['bathrooms'].div(df['accommodates'].replace(0,np.nan))
     return df
@@ -127,6 +136,9 @@ def cluster_zipcodes(df):
 
 
 def extract_amenities(df):
+    """
+    Extracts key amenities that may affect price from the amenities list and creates categorical features for them
+    """
     amen_list =['outdoor dining area','patio or balcony','long term stays allowed','life size games','bbq grill',
                 'fire pit','private patio or balcony','fireplace',r'\bpool(?!.*table)','hot tub','free parking',
                 'air conditioning']
@@ -153,6 +165,9 @@ def extract_amenities(df):
 
 
 def bin_min_nights(df):
+    """
+    Creates binned categorical features for minimum nights
+    """
     conditons = ([(df['minimum_nights'] <=2),((df['minimum_nights'] > 2) & (df['minimum_nights'] < 5)),
                  ((df['minimum_nights'] >= 5) & (df['minimum_nights'] < 30)),
                 (df['minimum_nights'] == 30),((df['minimum_nights'] > 30) & (df['minimum_nights'] < 60)),
@@ -167,6 +182,9 @@ def bin_min_nights(df):
 
 
 def bin_accommodates(df):
+    """
+    Creates binned categorical features for accommodates
+    """
     conditons = ([df['accommodates'] == 1,df['accommodates'] == 2,df['accommodates'] == 3,df['accommodates'] == 4,
                  df['accommodates'] == 5,df['accommodates'] == 6,df['accommodates'] == 7,df['accommodates'] == 8, 
                  ((df['accommodates'] == 10) | (df['accommodates'] == 9)),
@@ -181,6 +199,9 @@ def bin_accommodates(df):
 
 
 def bin_bathrooms(df):
+    """
+    Creates binned categorical features for bathrooms
+    """
     conditons = ([(df['bathrooms'] < 1.0), (df['bathrooms'] == 1.0),(df['bathrooms'] > 1.0) & (df['bathrooms'] <= 2.0),
                   (df['bathrooms'] > 2.0) & (df['bathrooms'] <= 3.5),(df['bathrooms'] > 3.5) & (df['bathrooms'] < 6.0),
                   (df['bathrooms'] >= 6.0 ) & (df['bathrooms'] <= 8),(df['bathrooms'] > 8.0)])
@@ -193,8 +214,12 @@ def bin_bathrooms(df):
 
 
 def condense_prop_type(df):
+    """
+    Extracts the five largest property type values and creates a column with only those five types and everything else
+    considered 'other.'
+    """
     top_prop_types = df['property_type'].value_counts().nlargest(5).index
-    df['property_type_clean'] = df['property_type'].where(df['property_type'].isin(top_prop_types), 'Other')
+    df['property_type_clean'] = df['property_type'].where(df['property_type'].isin(top_prop_types), 'other')
     return df
 
 
@@ -203,12 +228,18 @@ def is_id_in_test_set(identifier,test_ratio):
 
 
 def split_data_with_id_hash(data,test_ratio,id_column):
+    """
+    Splits the data into train and test sets using the hashed id column. 
+    """
     ids = data[id_column]
     in_test_set = ids.apply(lambda id_:is_id_in_test_set(id_, test_ratio))
     return data.loc[~in_test_set], data.loc[in_test_set]
 
 
 def log_re_transformation(results,use_smearing=True):
+    """
+    Transforms logged target back to original scale with the smearing factor option set as the default. 
+    """
     target_values = pd.Series(results.model.endog,index=results.model.data.row_labels,name=results.model.endog_names)
     predicted_values = results.fittedvalues
     residuals = results.resid
@@ -222,7 +253,10 @@ def log_re_transformation(results,use_smearing=True):
 
 
 def prep_data_ols_statsmodels(df: pd.DataFrame,*,features: list,target: str,cat_features = None,log_transform=False): 
-    
+    """
+    Prepares data for statsmodels by adding constant, turning categorical features into dummy columns, and 
+    log transforming the target. 
+    """
     X = df[features].copy()
     X = pd.get_dummies(X,columns=cat_features,drop_first=True, dtype=int)
     X = sm.add_constant(X)
@@ -235,6 +269,9 @@ def prep_data_ols_statsmodels(df: pd.DataFrame,*,features: list,target: str,cat_
 
 
 def post_split_clean(df: pd.DataFrame):
+    """
+    Drops and fills NaN columns, cleans the formatting of some columns, and filters the price column.
+    """
     df = df.copy()
     processed_df = (
         df
@@ -246,14 +283,12 @@ def post_split_clean(df: pd.DataFrame):
     return processed_df
 
 
-def feature_engineering(df: pd.DataFrame,file_path):
+def feature_engineering(df: pd.DataFrame,file_path=None):
     logger.info("Engineering features...")
     df = df.copy()
     processed_df = (
         df
         .pipe(per_accom_feature)
-        .pipe(geo_zip_encode,file_path)
-        .pipe(cluster_zipcodes)
         .pipe(extract_amenities)
         .pipe(bin_min_nights)
         .pipe(bin_accommodates)
