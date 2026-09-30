@@ -1,0 +1,84 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                  price   R-squared:                       0.707
+Model:                            OLS   Adj. R-squared:                  0.706
+Method:                 Least Squares   F-statistic:                     433.9
+Date:                Wed, 30 Sep 2026   Prob (F-statistic):               0.00
+Time:                        11:54:18   Log-Likelihood:                -4838.9
+No. Observations:               10472   AIC:                             9796.
+Df Residuals:                   10413   BIC:                         1.022e+04
+Df Model:                          58                                         
+Covariance Type:            nonrobust                                         
+====================================================================================================================
+                                                       coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------
+const                                                4.2838      0.080     53.883      0.000       4.128       4.440
+review_scores_rating                                 0.1206      0.013      9.191      0.000       0.095       0.146
+bedrooms                                             0.1134      0.008     15.089      0.000       0.099       0.128
+calculated_host_listings_count_private_rooms        -0.0074      0.000    -14.863      0.000      -0.008      -0.006
+bath_per_accom                                      -0.1927      0.025     -7.595      0.000      -0.242      -0.143
+calculated_host_listings_count                       0.0011      0.000      8.813      0.000       0.001       0.001
+room_type_Hotel room                                 0.3444      0.070      4.937      0.000       0.208       0.481
+room_type_Private room                              -0.1494      0.020     -7.428      0.000      -0.189      -0.110
+room_type_Shared room                               -1.1924      0.070    -17.015      0.000      -1.330      -1.055
+neighbourhood_group_cleansed_Beacon Hill            -0.1115      0.024     -4.739      0.000      -0.158      -0.065
+neighbourhood_group_cleansed_Capitol Hill            0.1454      0.020      7.108      0.000       0.105       0.186
+neighbourhood_group_cleansed_Cascade                 0.2086      0.027      7.844      0.000       0.156       0.261
+neighbourhood_group_cleansed_Central Area            0.0331      0.020      1.669      0.095      -0.006       0.072
+neighbourhood_group_cleansed_Delridge               -0.1990      0.026     -7.542      0.000      -0.251      -0.147
+neighbourhood_group_cleansed_Downtown                0.1873      0.022      8.656      0.000       0.145       0.230
+neighbourhood_group_cleansed_Interbay               -0.1582      0.077     -2.061      0.039      -0.309      -0.008
+neighbourhood_group_cleansed_Lake City              -0.1687      0.031     -5.430      0.000      -0.230      -0.108
+neighbourhood_group_cleansed_Magnolia                0.0275      0.032      0.862      0.389      -0.035       0.090
+neighbourhood_group_cleansed_Northgate              -0.1786      0.025     -7.068      0.000      -0.228      -0.129
+neighbourhood_group_cleansed_Other neighborhoods    -0.0450      0.018     -2.569      0.010      -0.079      -0.011
+neighbourhood_group_cleansed_Queen Anne              0.0985      0.021      4.801      0.000       0.058       0.139
+neighbourhood_group_cleansed_Rainier Valley         -0.1645      0.022     -7.449      0.000      -0.208      -0.121
+neighbourhood_group_cleansed_Seward Park            -0.1404      0.043     -3.234      0.001      -0.225      -0.055
+neighbourhood_group_cleansed_University District    -0.1374      0.025     -5.477      0.000      -0.187      -0.088
+neighbourhood_group_cleansed_West Seattle           -0.0006      0.021     -0.028      0.978      -0.041       0.040
+property_type_clean_Entire home                      0.1450      0.020      7.317      0.000       0.106       0.184
+property_type_clean_Entire rental unit               0.0388      0.018      2.141      0.032       0.003       0.074
+property_type_clean_Entire townhouse                 0.0435      0.023      1.886      0.059      -0.002       0.089
+property_type_clean_Private room in home            -0.1313      0.029     -4.530      0.000      -0.188      -0.075
+property_type_clean_other                            0.0598      0.019      3.080      0.002       0.022       0.098
+hot_tub_1                                            0.1139      0.018      6.248      0.000       0.078       0.150
+ac_1                                                 0.0509      0.008      6.345      0.000       0.035       0.067
+patio_balcony_1                                      0.0496      0.008      6.139      0.000       0.034       0.065
+life_size_games_1                                    0.1217      0.045      2.677      0.007       0.033       0.211
+has_pool_1                                           0.0485      0.025      1.970      0.049       0.000       0.097
+host_is_superhost_t                                 -0.0591      0.008     -6.962      0.000      -0.076      -0.042
+month_June                                           0.3199      0.031     10.479      0.000       0.260       0.380
+month_September                                     -0.2211      0.030     -7.252      0.000      -0.281      -0.161
+accommodates_cat_eleven_twelve_guests                0.0648      0.036      1.818      0.069      -0.005       0.135
+accommodates_cat_five_guests                        -0.1108      0.026     -4.334      0.000      -0.161      -0.061
+accommodates_cat_four_guests                        -0.1401      0.023     -5.964      0.000      -0.186      -0.094
+accommodates_cat_nine_ten_guests                     0.0135      0.028      0.485      0.628      -0.041       0.068
+accommodates_cat_one_guest                          -0.4250      0.046     -9.159      0.000      -0.516      -0.334
+accommodates_cat_seven_guests                       -0.0920      0.030     -3.080      0.002      -0.151      -0.033
+accommodates_cat_six_guests                         -0.0702      0.021     -3.418      0.001      -0.111      -0.030
+accommodates_cat_thirteen_plus_guests                0.0356      0.045      0.798      0.425      -0.052       0.123
+accommodates_cat_three_guests                       -0.2550      0.029     -8.874      0.000      -0.311      -0.199
+accommodates_cat_two_guests                         -0.2544      0.029     -8.703      0.000      -0.312      -0.197
+bathrooms_cat_bath_1.5_2                             0.1399      0.014      9.805      0.000       0.112       0.168
+bathrooms_cat_bath_2.5_3.5                           0.2352      0.021     10.946      0.000       0.193       0.277
+bathrooms_cat_bath_4_6                               0.5021      0.047     10.705      0.000       0.410       0.594
+bathrooms_cat_bath_6_8                               0.5433      0.094      5.791      0.000       0.359       0.727
+bathrooms_cat_bath_8_plus                            2.5551      0.352      7.261      0.000       1.865       3.245
+bathrooms_cat_bath_less_1                            0.1368      0.048      2.867      0.004       0.043       0.230
+minimum_nights_cat_min_night_30_60                   0.1432      0.041      3.454      0.001       0.062       0.224
+minimum_nights_cat_min_night_five_to_29              0.3644      0.022     16.691      0.000       0.322       0.407
+minimum_nights_cat_min_nights_one_two                0.3855      0.011     34.619      0.000       0.364       0.407
+minimum_nights_cat_min_nights_three_four             0.4019      0.016     25.242      0.000       0.371       0.433
+minimum_nights_cat_min_over_60                      -0.4201      0.044     -9.645      0.000      -0.505      -0.335
+==============================================================================
+Omnibus:                      733.051   Durbin-Watson:                   1.857
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1437.696
+Skew:                           0.491   Prob(JB):                         0.00
+Kurtosis:                       4.527   Cond. No.                     5.60e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 5.6e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.

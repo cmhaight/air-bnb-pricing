@@ -1,4 +1,4 @@
-#  Seattle AirBNB Price Predictions 
+#  Seattle Airbnb Price Predictions 
 
 An end-to-end machine learning project that analyzes Seattle Airbnb listings to predict nightly rental prices and uncover key factors driving property values.
 
@@ -40,7 +40,7 @@ air-bnb-price-predictions/
 ├── outputs/            # Generated CSVs, graphs, statsmodels outputs, and an HTML summary 
 ├── README.md           # Project documentation
 ├── config.yaml         # Configuration settings 
-├── assets/
+├── assets/             # Saved example files for Github
 └── requirements.txt    # Python dependencies
 ```
 ##  Configuration
@@ -69,7 +69,7 @@ This project is built using **Python and Pandas**, structured as a modular comma
 2. **Train/Test Split (Data Leakage Prevention):** The dataset is split into training and testing sets before any modeling or processing occurs (using a hash on the listing ID to ensure deterministic, clean separation), guaranteeing valid evaluation
 3. **Data Cleaning & Preprocessing:** Dedicated submodules handle feature engineering, dropping unneeded columns, formatting messy data fields, and standardizing dates. Prices that are extreme outliers or likely to be mistakes are dropped. 
 4. **Statistical Modeling (`statsmodels`):** The pipeline fits two Ordinary Least Squares (OLS) models to evaluate baseline relationships and coefficients.
-5. **Machine Learning (`scikit-learn`):** The data is fed into two HistGradientBoostingRegressor (HGBR) models to capture non-linear patterns.
+5. **Machine Learning (`scikit-learn`):** The pipeline then fits two HistGradientBoostingRegressor (HGBR) models to capture non-linear patterns.
 6. **Automated Reporting:** Results, performance metrics, and model summaries are compiled and automatically outputted as CSVs, graphs, and a clean HTML summary report post-evaluation.
 
 ##  Exploratory Data Analysis (EDA)
@@ -83,18 +83,23 @@ This project evaluates four distinct models, progressing from interpretable econ
 * **1. Standard OLS Model (Baseline):** 
   * Built using `statsmodels` to establish initial feature coefficients and statistical significance.
   * Target values were log-transformed due to the large right skew in nightly prices. 
+  * When considering the 10 features with the highest t-values, the "shared room" feature was the most important predictor.
   * Limitation: Assumed linearity, which failed to capture diminishing returns or non-linear jumps in pricing for features like minimum number of nights. 
 
 * **2. Binned-Feature OLS Model:** 
   * Refined the econometric approach by binning non-linear features (such as `accommodates`,`bathrooms`, and `minimum nights` ) to better account for real-world pricing structures.
-  * Improved slightly overall interpretability and baseline fit compared to the unbinned linear model.
+  * Target values were log-transformed due to the large right skew in nightly prices.
+  * When considering the 10 features with the highest t-values, the "shared room" feature was the most important predictor. 
+  * Improved overall interpretability and baseline fit slightly compared to the unbinned linear model.
 
 * **3. Standard HistGradientBoosting Regressor (HGBR):** 
   * Implemented using `scikit-learn` to capture complex, non-linear interactions and feature dependencies.
+  * Based on permutation feature importance, "month" (month the listing was last scraped) was the most important predictor, yielding the highest mean drop in $R^2$. 
   * Outperformed the OLS baselines by handling feature interactions automatically.
 
 * **4. Gamma Loss HistGradientBoosting Regressor (Final Model):** 
   * Addressed the strongly right-skewed distribution of Airbnb prices by switching the loss function from standard squared error to Gamma loss.
+  * Based on permutation feature importance, "month" (month the listing was last scraped) was the most important predictor, yielding the highest mean drop in $R^2$. 
   * Provided the most robust predictions, preventing high-end luxury outliers from distorting model performance across typical listings.
 
 ## Output Summary
@@ -102,7 +107,7 @@ All comprehensive evaluation metrics (such as RMSE, MAE, MAPE, and $R^2$) and vi
 
 ![Model Comparison Results](assets/model_comparison.png)
 
-[View the full HTML results report](./assets/model_performance_report.html)
+[View the full HTML results report](.\outputs\run_20260930_115412\model_performance_report.html)
 
 ##  Limitations and Future Implications 
 
@@ -112,7 +117,7 @@ All comprehensive evaluation metrics (such as RMSE, MAE, MAPE, and $R^2$) and vi
 * This model uses neighborhood groups as a location categorical feature partially due to the limited number of observations. Zip codes could be used as the location feature with more observations. 
 
 ### Future Implications & Work
-* **Model Expansion:** A better pipeline for dealing with the large price range and right skew could first categorize listings as luxury or standard before being fed into one of two HGBR models. 
+* **Model Expansion:** A better pipeline for dealing with the large range of prices and right skew could first categorize listings as luxury or standard before being fed into one of two HGBR models. 
 * **Spatial Analysis:** Currently utilizes neighborhood groups for robust modeling; infrastructure exists to expand into precise polygon-based zip code sorting via `.shp` files if higher granularity is required.
 * **Geospatial Feature Engineering:** Incorporating more granular spatial data (like distance to transit hubs or specific neighborhood boundaries) to further refine the regression performance.
 * **Unstructured Text Analysis (NLP):** Expanding the pipeline to process listing descriptions and text fields using Natural Language Processing (NLP) techniques to evaluate how specific keywords or descriptive sentiment correlate with listing prices.
