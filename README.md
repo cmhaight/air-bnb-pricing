@@ -107,7 +107,7 @@ All comprehensive evaluation metrics (such as RMSE, MAE, MAPE, and $R^2$) and vi
 
 ![Model Comparison Results](assets/model_comparison.png)
 
-[View the full HTML results report](.\outputs\run_20260930_115412\model_performance_report.html)
+[View the full HTML results report](./outputs/run_20260930_115412/model_performance_report.html)
 
 ##  Limitations and Future Implications 
 
